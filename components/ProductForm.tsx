@@ -1,13 +1,15 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Product } from "@/lib/types";
 
 type Props = {
   product?: Product;
 };
+
+const MAX_IMAGES = 4;
 
 const emptyForm = {
   code: "",
@@ -24,63 +26,112 @@ const emptyForm = {
   provider: "",
   location: "",
   notes: "",
-  image_url: "",
+  image_urls: [] as string[],
   status: "disponible" as "disponible" | "vendido",
 };
+
+function buildForm(product?: Product) {
+  return product
+    ? {
+        code: product.code,
+        brand: product.brand,
+        model: product.model,
+        category: product.category ?? "",
+        size_us: product.size_us ?? "",
+        size_bol: product.size_bol ?? "",
+        color: product.color ?? "",
+        condition: product.condition ?? "",
+        usage_level: product.usage_level ?? "",
+        buy_price: product.buy_price?.toString() ?? "",
+        sale_price: product.sale_price.toString(),
+        provider: product.provider ?? "",
+        location: product.location ?? "",
+        notes: product.notes ?? "",
+        image_urls:
+          product.image_urls && product.image_urls.length > 0
+            ? product.image_urls
+            : product.image_url
+              ? [product.image_url]
+              : [],
+        status: product.status,
+      }
+    : emptyForm;
+}
 
 export default function ProductForm({ product }: Props) {
   const router = useRouter();
   const supabase = createClient();
-  const [form, setForm] = useState(
-    product
-      ? {
-          code: product.code,
-          brand: product.brand,
-          model: product.model,
-          category: product.category ?? "",
-          size_us: product.size_us ?? "",
-          size_bol: product.size_bol ?? "",
-          color: product.color ?? "",
-          condition: product.condition ?? "",
-          usage_level: product.usage_level ?? "",
-          buy_price: product.buy_price?.toString() ?? "",
-          sale_price: product.sale_price.toString(),
-          provider: product.provider ?? "",
-          location: product.location ?? "",
-          notes: product.notes ?? "",
-          image_url: product.image_url ?? "",
-          status: product.status,
-        }
-      : emptyForm
-  );
+  const [initialForm] = useState(() => buildForm(product));
+  const [form, setForm] = useState(initialForm);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const savedRef = useRef(false);
+
+  const isDirty = useMemo(
+    () => JSON.stringify(form) !== JSON.stringify(initialForm),
+    [form, initialForm]
+  );
+
+  useEffect(() => {
+    function handleBeforeUnload(e: BeforeUnloadEvent) {
+      if (!isDirty || savedRef.current) return;
+      e.preventDefault();
+    }
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
+
+  function handleBack() {
+    if (isDirty && !confirm("Tienes cambios sin guardar. ¿Deseas salir sin guardar?")) {
+      return;
+    }
+    router.push("/admin");
+  }
 
   function update<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
     setForm((f) => ({ ...f, [key]: value }));
   }
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files ?? []);
+    e.target.value = "";
+    if (files.length === 0) return;
+
+    const remaining = MAX_IMAGES - form.image_urls.length;
+    if (remaining <= 0) {
+      setError(`Máximo ${MAX_IMAGES} fotos por producto.`);
+      return;
+    }
+    const toUpload = files.slice(0, remaining);
+
     setUploading(true);
     setError(null);
 
-    const path = `${Date.now()}-${file.name}`;
-    const { error: uploadError } = await supabase.storage
-      .from("product-images")
-      .upload(path, file);
+    const uploadedUrls: string[] = [];
+    for (const file of toUpload) {
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2)}-${file.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from("product-images")
+        .upload(path, file);
 
-    if (uploadError) {
-      setError(`Error al subir imagen: ${uploadError.message}`);
-      setUploading(false);
-      return;
+      if (uploadError) {
+        setError(`Error al subir imagen: ${uploadError.message}`);
+        continue;
+      }
+      const { data } = supabase.storage.from("product-images").getPublicUrl(path);
+      uploadedUrls.push(data.publicUrl);
     }
 
-    const { data } = supabase.storage.from("product-images").getPublicUrl(path);
-    update("image_url", data.publicUrl);
+    update("image_urls", [...form.image_urls, ...uploadedUrls]);
     setUploading(false);
+  }
+
+  function removeImage(index: number) {
+    update(
+      "image_urls",
+      form.image_urls.filter((_, i) => i !== index)
+    );
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -103,7 +154,8 @@ export default function ProductForm({ product }: Props) {
       provider: form.provider || null,
       location: form.location || null,
       notes: form.notes || null,
-      image_url: form.image_url || null,
+      image_urls: form.image_urls,
+      image_url: form.image_urls[0] ?? null,
       status: form.status,
     };
 
@@ -116,12 +168,21 @@ export default function ProductForm({ product }: Props) {
       setError(result.error.message);
       return;
     }
+    savedRef.current = true;
     router.push("/admin");
     router.refresh();
   }
 
   return (
     <form onSubmit={handleSubmit} className="flex max-w-xl flex-col gap-3">
+      <button
+        type="button"
+        onClick={handleBack}
+        className="mb-1 flex w-fit items-center gap-1 text-sm text-zinc-500 hover:underline"
+      >
+        &larr; Volver
+      </button>
+
       <label className="flex flex-col gap-1 text-sm">
         Código
         <input
@@ -257,19 +318,37 @@ export default function ProductForm({ product }: Props) {
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-sm">
-        Foto
-        <input type="file" accept="image/*" onChange={handleImageUpload} />
-        {uploading && <span className="text-xs text-zinc-500">Subiendo...</span>}
-        {form.image_url && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={form.image_url}
-            alt="preview"
-            className="mt-2 h-32 w-32 rounded-lg object-cover"
-          />
+      <div className="flex flex-col gap-2 text-sm">
+        <span>Fotos ({form.image_urls.length}/{MAX_IMAGES})</span>
+
+        {form.image_urls.length > 0 && (
+          <div className="grid grid-cols-4 gap-2">
+            {form.image_urls.map((url, i) => (
+              <div key={url} className="relative">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={url}
+                  alt={`preview ${i + 1}`}
+                  className="aspect-square w-full rounded-lg object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeImage(i)}
+                  className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-xs text-white"
+                  aria-label="Quitar foto"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
         )}
-      </label>
+
+        {form.image_urls.length < MAX_IMAGES && (
+          <input type="file" accept="image/*" multiple onChange={handleImageUpload} />
+        )}
+        {uploading && <span className="text-xs text-zinc-500">Subiendo...</span>}
+      </div>
 
       <label className="flex flex-col gap-1 text-sm">
         Estado publicación

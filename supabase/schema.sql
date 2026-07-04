@@ -19,9 +19,13 @@ create table if not exists products (
   location text,
   notes text,
   image_url text,
+  image_urls text[] not null default '{}',
   status text not null default 'disponible' check (status in ('disponible', 'vendido')),
   created_at timestamptz not null default now()
 );
+
+-- Migración: agrega la galería de imágenes si la tabla ya existía sin esta columna.
+alter table products add column if not exists image_urls text[] not null default '{}';
 
 create index if not exists products_status_idx on products (status);
 create index if not exists products_brand_idx on products (brand);

@@ -1,9 +1,9 @@
 import Link from "next/link";
 import type { Product } from "@/lib/types";
-import { driveThumbnailUrl } from "@/lib/drive";
+import { productImageList } from "@/lib/drive";
 
 export default function ProductCard({ product }: { product: Product }) {
-  const image = driveThumbnailUrl(product.image_url);
+  const image = productImageList(product)[0] ?? null;
 
   return (
     <Link

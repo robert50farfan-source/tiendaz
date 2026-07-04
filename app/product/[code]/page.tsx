@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { driveThumbnailUrl } from "@/lib/drive";
+import { productImageList } from "@/lib/drive";
+import ProductGallery from "@/components/ProductGallery";
 import type { Product } from "@/lib/types";
 
 export const revalidate = 0;
@@ -21,7 +22,7 @@ export default async function ProductPage({
 
   if (!product) notFound();
 
-  const image = driveThumbnailUrl(product.image_url, 1200);
+  const images = productImageList(product, 1200);
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6 px-4 py-8">
@@ -30,20 +31,7 @@ export default async function ProductPage({
       </Link>
 
       <div className="grid gap-8 sm:grid-cols-2">
-        <div className="aspect-square overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800">
-          {image ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={image}
-              alt={`${product.brand} ${product.model}`}
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center text-sm text-zinc-400">
-              Sin foto
-            </div>
-          )}
-        </div>
+        <ProductGallery images={images} alt={`${product.brand} ${product.model}`} />
 
         <div className="flex flex-col gap-3">
           <span className="text-sm font-medium uppercase tracking-wide text-zinc-500">
