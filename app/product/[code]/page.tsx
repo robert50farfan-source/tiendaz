@@ -2,8 +2,9 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { productImageList } from "@/lib/drive";
+import { buildWhatsappLink } from "@/lib/whatsapp";
 import ProductGallery from "@/components/ProductGallery";
-import type { Product } from "@/lib/types";
+import type { Product, Settings } from "@/lib/types";
 
 export const revalidate = 0;
 
@@ -14,15 +15,18 @@ export default async function ProductPage({
 }) {
   const { code } = await params;
   const supabase = await createClient();
-  const { data: product } = await supabase
-    .from("products")
-    .select("*")
-    .eq("code", code)
-    .single<Product>();
+  const [{ data: product }, { data: settings }] = await Promise.all([
+    supabase.from("products").select("*").eq("code", code).single<Product>(),
+    supabase.from("settings").select("*").eq("id", 1).single<Settings>(),
+  ]);
 
   if (!product) notFound();
 
   const images = productImageList(product, 1200);
+  const whatsappLink =
+    product.status === "disponible"
+      ? buildWhatsappLink(settings?.whatsapp_number, product)
+      : null;
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6 px-4 py-8">
@@ -69,6 +73,17 @@ export default async function ProductPage({
             <p className="mt-2 rounded-lg bg-zinc-50 p-3 text-sm text-zinc-600 dark:bg-zinc-900 dark:text-zinc-400">
               {product.notes}
             </p>
+          )}
+
+          {whatsappLink && (
+            <a
+              href={whatsappLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 flex w-fit items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700"
+            >
+              Contactar por WhatsApp
+            </a>
           )}
         </div>
       </div>

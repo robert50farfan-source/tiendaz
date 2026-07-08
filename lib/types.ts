@@ -20,3 +20,9 @@ export type Product = {
   status: "disponible" | "vendido";
   created_at: string;
 };
+
+export type Settings = {
+  id: number;
+  whatsapp_number: string | null;
+  updated_at: string;
+};

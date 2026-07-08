@@ -26,6 +26,12 @@ export default async function AdminPage() {
         </div>
         <div className="flex items-center gap-4">
           <Link
+            href="/admin/settings"
+            className="text-sm text-zinc-500 hover:underline"
+          >
+            Configuración
+          </Link>
+          <Link
             href="/admin/products/new"
             className="rounded-lg bg-zinc-900 px-3 py-2 text-sm font-semibold text-white dark:bg-zinc-100 dark:text-zinc-900"
           >

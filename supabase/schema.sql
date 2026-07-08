@@ -77,3 +77,24 @@ create policy "product_images_admin_delete"
   on storage.objects for delete
   to authenticated
   using (bucket_id = 'product-images');
+
+-- Configuración general de la tienda (fila única, ej. número de WhatsApp de contacto)
+create table if not exists settings (
+  id smallint primary key default 1 check (id = 1),
+  whatsapp_number text,
+  updated_at timestamptz not null default now()
+);
+
+insert into settings (id) values (1) on conflict (id) do nothing;
+
+alter table settings enable row level security;
+
+create policy "settings_public_read"
+  on settings for select
+  using (true);
+
+create policy "settings_admin_update"
+  on settings for update
+  to authenticated
+  using (true)
+  with check (true);
