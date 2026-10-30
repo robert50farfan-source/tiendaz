@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { Product } from "@/lib/types";
+import type { PublicProduct } from "@/lib/types";
 import { buildWhatsappMessageLink } from "@/lib/whatsapp";
 import ProductCard from "./ProductCard";
 
@@ -13,7 +13,7 @@ export type CatalogFilterValues = {
   orden: string;
 };
 
-const SORTS: Record<string, { label: string; compare: (a: Product, b: Product) => number }> = {
+const SORTS: Record<string, { label: string; compare: (a: PublicProduct, b: PublicProduct) => number }> = {
   nuevos: {
     label: "Más nuevos",
     compare: (a, b) => b.created_at.localeCompare(a.created_at),
@@ -36,7 +36,7 @@ export default function CatalogFilters({
   initialFilters,
   whatsappNumber,
 }: {
-  products: Product[];
+  products: PublicProduct[];
   initialFilters: CatalogFilterValues;
   whatsappNumber: string | null;
 }) {

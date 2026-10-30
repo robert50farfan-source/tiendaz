@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { Product } from "@/lib/types";
+import type { PublicProduct } from "@/lib/types";
 import { productImageList } from "@/lib/drive";
 
 // Texto corto para la etiqueta de la tarjeta ("SIN USO" -> "Sin uso", "POCO" -> "Poco uso").
@@ -10,7 +10,7 @@ function usageLabel(usage: string | null): string | null {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-export default function ProductCard({ product }: { product: Product }) {
+export default function ProductCard({ product }: { product: PublicProduct }) {
   const image = productImageList(product)[0] ?? null;
   const usage = usageLabel(product.usage_level);
 

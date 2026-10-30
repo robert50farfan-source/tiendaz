@@ -4,7 +4,7 @@ import HowToBuy from "@/components/HowToBuy";
 import SizeGuide from "@/components/SizeGuide";
 import WhatsappFloatingButton from "@/components/WhatsappFloatingButton";
 import { buildWhatsappMessageLink } from "@/lib/whatsapp";
-import type { Product, Settings } from "@/lib/types";
+import { PUBLIC_PRODUCT_COLUMNS, type PublicProduct, type Settings } from "@/lib/types";
 
 export const revalidate = 0;
 
@@ -30,7 +30,7 @@ export default async function Home({
   const [{ data: products, error }, { data: settings }] = await Promise.all([
     supabase
       .from("products")
-      .select("*")
+      .select(PUBLIC_PRODUCT_COLUMNS)
       .eq("status", "disponible")
       .order("created_at", { ascending: false }),
     supabase.from("settings").select("*").eq("id", 1).single<Settings>(),
@@ -63,7 +63,7 @@ export default async function Home({
         </p>
       ) : (
         <CatalogFilters
-          products={(products ?? []) as Product[]}
+          products={(products ?? []) as PublicProduct[]}
           initialFilters={initialFilters}
           whatsappNumber={whatsappNumber}
         />

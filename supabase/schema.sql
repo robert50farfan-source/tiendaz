@@ -27,6 +27,15 @@ create table if not exists products (
 -- Migración: agrega la galería de imágenes si la tabla ya existía sin esta columna.
 alter table products add column if not exists image_urls text[] not null default '{}';
 
+-- Privacidad: el público (anon) solo puede leer las columnas de venta.
+-- buy_price, provider, intake_date y location quedan solo para el admin autenticado.
+-- Mantener sincronizado con PUBLIC_PRODUCT_COLUMNS en lib/types.ts.
+revoke select on products from anon;
+grant select (
+  id, code, brand, model, category, size_us, size_bol, color, condition,
+  usage_level, sale_price, notes, image_url, image_urls, status, created_at
+) on products to anon;
+
 create index if not exists products_status_idx on products (status);
 create index if not exists products_brand_idx on products (brand);
 

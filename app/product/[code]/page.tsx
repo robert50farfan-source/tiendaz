@@ -8,7 +8,7 @@ import { buildWhatsappLink } from "@/lib/whatsapp";
 import ProductGallery from "@/components/ProductGallery";
 import HowToBuy from "@/components/HowToBuy";
 import SizeGuide from "@/components/SizeGuide";
-import type { Product, Settings } from "@/lib/types";
+import { PUBLIC_PRODUCT_COLUMNS, type PublicProduct, type Settings } from "@/lib/types";
 
 export const revalidate = 0;
 
@@ -19,9 +19,9 @@ const getProduct = cache(async (code: string) => {
   const supabase = await createClient();
   const { data } = await supabase
     .from("products")
-    .select("*")
+    .select(PUBLIC_PRODUCT_COLUMNS)
     .eq("code", code)
-    .single<Product>();
+    .single<PublicProduct>();
   return data;
 });
 

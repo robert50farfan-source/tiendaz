@@ -21,6 +21,14 @@ export type Product = {
   created_at: string;
 };
 
+// Columnas que el público (rol anon) puede leer. buy_price, provider, intake_date
+// y location son internas: solo el admin autenticado las ve (ver supabase/schema.sql).
+// Si se agrega una columna pública, sumarla aquí y en el grant del schema.
+export const PUBLIC_PRODUCT_COLUMNS =
+  "id, code, brand, model, category, size_us, size_bol, color, condition, usage_level, sale_price, notes, image_url, image_urls, status, created_at";
+
+export type PublicProduct = Omit<Product, "buy_price" | "provider" | "intake_date" | "location">;
+
 export type Settings = {
   id: number;
   whatsapp_number: string | null;
