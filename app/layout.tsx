@@ -6,6 +6,12 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Tienda de Zapatillas Seminuevas",
   description: "Catálogo de zapatillas seminuevas revisadas y listas para usar.",
+  openGraph: {
+    title: "Tienda de Zapatillas Seminuevas",
+    description: "Pares únicos, revisados y listos para usar. Pídelos por WhatsApp.",
+    type: "website",
+    locale: "es_BO",
+  },
 };
 
 export default function RootLayout({
@@ -15,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="es"
       className={`${GeistSans.variable} ${GeistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>

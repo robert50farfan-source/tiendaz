@@ -1,22 +1,59 @@
+import { cache } from "react";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { productImageList } from "@/lib/drive";
 import { buildWhatsappLink } from "@/lib/whatsapp";
 import ProductGallery from "@/components/ProductGallery";
+import HowToBuy from "@/components/HowToBuy";
+import SizeGuide from "@/components/SizeGuide";
 import type { Product, Settings } from "@/lib/types";
 
 export const revalidate = 0;
 
-export default async function ProductPage({
-  params,
-}: {
-  params: Promise<{ code: string }>;
-}) {
+type Props = { params: Promise<{ code: string }> };
+
+// Memoizado para que generateMetadata y la página compartan una sola consulta.
+const getProduct = cache(async (code: string) => {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("products")
+    .select("*")
+    .eq("code", code)
+    .single<Product>();
+  return data;
+});
+
+// Vista previa al compartir el link por WhatsApp/Instagram: foto, talla y precio.
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { code } = await params;
+  const product = await getProduct(code);
+  if (!product) return {};
+
+  const title = `${product.brand} ${product.model} · US ${product.size_us ?? "-"} · Bs ${product.sale_price}`;
+  const description =
+    product.status === "vendido"
+      ? "Este par ya se vendió. Mira otros pares disponibles en el catálogo."
+      : `Seminuevas, estado ${product.condition?.toLowerCase() ?? "revisado"}. Pídelas por WhatsApp y te las llevamos para probártelas.`;
+  const image = productImageList(product, 1200)[0];
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: image ? [{ url: image, width: 1200, height: 1200 }] : undefined,
+    },
+  };
+}
+
+export default async function ProductPage({ params }: Props) {
   const { code } = await params;
   const supabase = await createClient();
-  const [{ data: product }, { data: settings }] = await Promise.all([
-    supabase.from("products").select("*").eq("code", code).single<Product>(),
+  const [product, { data: settings }] = await Promise.all([
+    getProduct(code),
     supabase.from("settings").select("*").eq("id", 1).single<Settings>(),
   ]);
 
@@ -85,6 +122,19 @@ export default async function ProductPage({
               Contactar por WhatsApp
             </a>
           )}
+
+          {product.status === "vendido" && product.size_us && (
+            <Link
+              href={`/?talla=${encodeURIComponent(product.size_us)}`}
+              className="mt-2 w-fit rounded-lg border border-zinc-300 px-4 py-2 text-sm font-semibold hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-900"
+            >
+              Ver otros pares en talla US {product.size_us}
+            </Link>
+          )}
+
+          {product.status === "disponible" && <HowToBuy compact />}
+
+          <SizeGuide />
         </div>
       </div>
     </div>
