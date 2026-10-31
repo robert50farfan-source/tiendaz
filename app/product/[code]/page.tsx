@@ -5,6 +5,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { productImageList } from "@/lib/drive";
 import { buildWhatsappLink } from "@/lib/whatsapp";
+import { getSiteUrl } from "@/lib/site-url";
 import ProductGallery from "@/components/ProductGallery";
 import HowToBuy from "@/components/HowToBuy";
 import SizeGuide from "@/components/SizeGuide";
@@ -60,9 +61,11 @@ export default async function ProductPage({ params }: Props) {
   if (!product) notFound();
 
   const images = productImageList(product, 1200);
+  const siteUrl = await getSiteUrl();
+  const productUrl = siteUrl ? `${siteUrl}/product/${encodeURIComponent(product.code)}` : null;
   const whatsappLink =
     product.status === "disponible"
-      ? buildWhatsappLink(settings?.whatsapp_number, product)
+      ? buildWhatsappLink(settings?.whatsapp_number, product, productUrl)
       : null;
 
   return (

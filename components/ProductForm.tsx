@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { resizeImage } from "@/lib/resize-image";
 import type { Product } from "@/lib/types";
 
 type Props = {
@@ -109,7 +110,8 @@ export default function ProductForm({ product }: Props) {
     setError(null);
 
     const uploadedUrls: string[] = [];
-    for (const file of toUpload) {
+    for (const original of toUpload) {
+      const file = await resizeImage(original);
       const path = `${Date.now()}-${Math.random().toString(36).slice(2)}-${file.name}`;
       const { error: uploadError } = await supabase.storage
         .from("product-images")
@@ -347,7 +349,7 @@ export default function ProductForm({ product }: Props) {
         {form.image_urls.length < MAX_IMAGES && (
           <input type="file" accept="image/*" multiple onChange={handleImageUpload} />
         )}
-        {uploading && <span className="text-xs text-zinc-500">Subiendo...</span>}
+        {uploading && <span className="text-xs text-zinc-500">Optimizando y subiendo fotos...</span>}
       </div>
 
       <label className="flex flex-col gap-1 text-sm">

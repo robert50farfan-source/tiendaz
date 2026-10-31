@@ -13,10 +13,14 @@ export function buildWhatsappMessageLink(
   return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
 }
 
+// Si se pasa productUrl, va al final del mensaje: WhatsApp arma con él una
+// vista previa (foto, modelo y precio, desde los meta Open Graph de la ficha).
 export function buildWhatsappLink(
   rawNumber: string | null | undefined,
-  product: Pick<Product, "code" | "brand" | "model">
+  product: Pick<Product, "code" | "brand" | "model">,
+  productUrl?: string | null
 ): string | null {
-  const message = `Hola, me interesa el par ${product.brand} ${product.model} (código ${product.code}). ¿Sigue disponible?`;
+  let message = `Hola, me interesa el par ${product.brand} ${product.model} (código ${product.code}). ¿Sigue disponible?`;
+  if (productUrl) message += `\n${productUrl}`;
   return buildWhatsappMessageLink(rawNumber, message);
 }
