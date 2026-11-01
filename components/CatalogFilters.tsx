@@ -79,7 +79,14 @@ export default function CatalogFilters({
       if (filters.max && p.sale_price > Number(filters.max)) return false;
       return true;
     })
-    .sort(sort.compare);
+    // Los vendidos se muestran (como referencia de lo que se vende) pero siempre al final.
+    .sort(
+      (a, b) =>
+        Number(a.status === "vendido") - Number(b.status === "vendido") || sort.compare(a, b)
+    );
+
+  const soldCount = filtered.filter((p) => p.status === "vendido").length;
+  const availableCount = filtered.length - soldCount;
 
   const hasFilters = Boolean(filters.q || filters.marca || filters.talla || filters.max);
 
@@ -139,7 +146,8 @@ export default function CatalogFilters({
 
       <div className="flex items-center gap-3 text-sm text-zinc-500">
         <span>
-          {filtered.length} {filtered.length === 1 ? "par" : "pares"}
+          {availableCount} {availableCount === 1 ? "disponible" : "disponibles"}
+          {soldCount > 0 && ` · ${soldCount} ${soldCount === 1 ? "vendido" : "vendidos"}`}
         </span>
         {hasFilters && (
           <button
@@ -152,11 +160,14 @@ export default function CatalogFilters({
         )}
       </div>
 
-      {filtered.length === 0 ? (
+      {availableCount === 0 && (
         <div className="flex flex-col items-start gap-3 rounded-xl border border-dashed border-zinc-300 p-6 dark:border-zinc-700">
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            No hay pares que coincidan con tu búsqueda. Nos llegan pares nuevos seguido:
-            escríbenos y te avisamos cuando llegue algo en tu talla.
+            {soldCount > 0
+              ? "Los pares que coinciden con tu búsqueda ya se vendieron."
+              : "No hay pares que coincidan con tu búsqueda."}{" "}
+            Nos llegan pares nuevos seguido: escríbenos y te avisamos cuando llegue algo en
+            tu talla.
           </p>
           {requestLink && (
             <a
@@ -169,7 +180,9 @@ export default function CatalogFilters({
             </a>
           )}
         </div>
-      ) : (
+      )}
+
+      {filtered.length > 0 && (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {filtered.map((product) => (
             <ProductCard key={product.id} product={product} />

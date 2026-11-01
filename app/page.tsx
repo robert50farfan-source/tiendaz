@@ -31,7 +31,6 @@ export default async function Home({
     supabase
       .from("products")
       .select(PUBLIC_PRODUCT_COLUMNS)
-      .eq("status", "disponible")
       .order("created_at", { ascending: false }),
     supabase.from("settings").select("*").eq("id", 1).single<Settings>(),
   ]);

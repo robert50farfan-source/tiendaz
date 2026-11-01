@@ -13,6 +13,7 @@ function usageLabel(usage: string | null): string | null {
 export default function ProductCard({ product }: { product: PublicProduct }) {
   const image = productImageList(product)[0] ?? null;
   const usage = usageLabel(product.usage_level);
+  const sold = product.status === "vendido";
 
   return (
     <Link
@@ -20,7 +21,7 @@ export default function ProductCard({ product }: { product: PublicProduct }) {
       className="group flex flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white transition-shadow hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
     >
       <div className="relative aspect-square w-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-        {usage && (
+        {!sold && usage && (
           <span className="absolute left-2 top-2 z-[1] rounded-full bg-white/90 px-2 py-0.5 text-xs font-semibold text-zinc-900 shadow-sm">
             {usage}
           </span>
@@ -32,7 +33,9 @@ export default function ProductCard({ product }: { product: PublicProduct }) {
             alt={`${product.brand} ${product.model}`}
             loading="lazy"
             decoding="async"
-            className="h-full w-full object-cover transition-transform group-hover:scale-105"
+            className={`h-full w-full object-cover transition-transform group-hover:scale-105 ${
+              sold ? "opacity-60 grayscale" : ""
+            }`}
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-sm text-zinc-400">
@@ -50,9 +53,13 @@ export default function ProductCard({ product }: { product: PublicProduct }) {
         <span className="text-xs text-zinc-500">
           US {product.size_us ?? "-"} / BOL {product.size_bol ?? "-"}
         </span>
-        <span className="mt-1 text-base font-bold text-zinc-900 dark:text-zinc-50">
-          Bs {product.sale_price}
-        </span>
+        {sold ? (
+          <span className="mt-1 text-base font-bold text-red-600">VENDIDO</span>
+        ) : (
+          <span className="mt-1 text-base font-bold text-zinc-900 dark:text-zinc-50">
+            Bs {product.sale_price}
+          </span>
+        )}
       </div>
     </Link>
   );

@@ -89,9 +89,7 @@ export default async function ProductPage({ params }: Props) {
           </span>
 
           {product.status === "vendido" && (
-            <span className="w-fit rounded-full bg-zinc-900 px-3 py-1 text-xs font-semibold text-white dark:bg-zinc-100 dark:text-zinc-900">
-              Vendido
-            </span>
+            <span className="text-xl font-bold tracking-wide text-red-600">VENDIDO</span>
           )}
 
           <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
