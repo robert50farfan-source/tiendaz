@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description =
     product.status === "vendido"
       ? "Este par ya se vendió. Mira otros pares disponibles en el catálogo."
-      : `Seminuevas, estado ${product.condition?.toLowerCase() ?? "revisado"}. Pídelas por WhatsApp y te las llevamos para probártelas.`;
+      : `Estado ${product.condition?.toLowerCase() ?? "revisado"}. Pídelas por WhatsApp y te las llevamos para probártelas.`;
   const image = productImageList(product, 1200)[0];
 
   return {

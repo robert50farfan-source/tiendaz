@@ -40,13 +40,12 @@ function textPanel(): Buffer {
     `<text x="60" y="${y}" font-family="Arial, Helvetica, sans-serif" font-size="${size}" font-weight="${weight}" fill="${color}">${escapeXml(text)}</text>`;
 
   const svg = `<svg width="${WIDTH}" height="${HEIGHT}" xmlns="http://www.w3.org/2000/svg">
-    ${line(200, 64, 800, "#ffffff", "Zapatillas")}
-    ${line(270, 64, 800, "#ffffff", "seminuevas")}
-    ${line(340, 28, 400, "#d4d4d8", "Pares únicos, revisados")}
-    ${line(378, 28, 400, "#d4d4d8", "y listos para usar.")}
-    <rect x="60" y="420" width="430" height="64" rx="32" fill="#16a34a"/>
-    ${`<text x="275" y="461" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" fill="#ffffff">Pídelos por WhatsApp</text>`}
-    ${line(550, 26, 600, "#a1a1aa", "tiendaz.online")}
+    ${line(240, 72, 800, "#ffffff", "Zapatillas")}
+    ${line(310, 28, 400, "#d4d4d8", "Pares únicos, revisados")}
+    ${line(348, 28, 400, "#d4d4d8", "y listos para usar.")}
+    <rect x="60" y="390" width="430" height="64" rx="32" fill="#16a34a"/>
+    ${`<text x="275" y="431" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" fill="#ffffff">Pídelos por WhatsApp</text>`}
+    ${line(520, 26, 600, "#a1a1aa", "tiendaz.online")}
   </svg>`;
   return Buffer.from(svg);
 }

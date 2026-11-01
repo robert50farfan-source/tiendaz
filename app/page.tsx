@@ -45,7 +45,7 @@ export default async function Home({
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 pt-8 pb-24">
       <header className="flex flex-col gap-1">
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
-          Zapatillas seminuevas
+          Zapatillas
         </h1>
         <p className="text-sm text-zinc-500">
           Pares únicos, revisados y listos para usar. Te los llevamos para que te los pruebes.
