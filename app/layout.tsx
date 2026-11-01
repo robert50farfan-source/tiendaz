@@ -4,6 +4,9 @@ import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  // Base para las URLs absolutas de los meta tags (ej. og:image). SITE_URL permite
+  // cambiar de dominio sin tocar código.
+  metadataBase: new URL(process.env.SITE_URL ?? "https://tiendaz.online"),
   title: "Tienda de Zapatillas Seminuevas",
   description: "Catálogo de zapatillas seminuevas revisadas y listas para usar.",
   openGraph: {
@@ -11,6 +14,8 @@ export const metadata: Metadata = {
     description: "Pares únicos, revisados y listos para usar. Pídelos por WhatsApp.",
     type: "website",
     locale: "es_BO",
+    // Collage generado con scripts/generate-og-image.ts.
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Zapatillas seminuevas" }],
   },
 };
 
