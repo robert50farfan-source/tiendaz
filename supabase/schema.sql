@@ -87,6 +87,8 @@ create policy "product_images_admin_delete"
   to authenticated
   using (bucket_id = 'product-images');
 
+-- Estadísticas de visitas: ver supabase/analytics.sql
+
 -- Configuración general de la tienda (fila única, ej. número de WhatsApp de contacto)
 create table if not exists settings (
   id smallint primary key default 1 check (id = 1),

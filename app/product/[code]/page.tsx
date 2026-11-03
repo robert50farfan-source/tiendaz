@@ -9,6 +9,8 @@ import { getSiteUrl } from "@/lib/site-url";
 import ProductGallery from "@/components/ProductGallery";
 import HowToBuy from "@/components/HowToBuy";
 import SizeGuide from "@/components/SizeGuide";
+import PageViewTracker from "@/components/PageViewTracker";
+import WhatsappLink from "@/components/WhatsappLink";
 import { PUBLIC_PRODUCT_COLUMNS, type PublicProduct, type Settings } from "@/lib/types";
 
 export const revalidate = 0;
@@ -72,6 +74,7 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6 px-4 py-8">
+      <PageViewTracker productCode={product.code} />
       <Link href="/" className="text-sm text-zinc-500 hover:underline">
         &larr; Volver al catálogo
       </Link>
@@ -116,14 +119,13 @@ export default async function ProductPage({ params }: Props) {
           )}
 
           {whatsappLink && (
-            <a
+            <WhatsappLink
               href={whatsappLink}
-              target="_blank"
-              rel="noopener noreferrer"
+              productCode={product.code}
               className="mt-2 flex w-fit items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700"
             >
               Contactar por WhatsApp
-            </a>
+            </WhatsappLink>
           )}
 
           {product.status === "vendido" && product.size_us && (

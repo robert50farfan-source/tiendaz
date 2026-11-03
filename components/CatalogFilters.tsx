@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { PublicProduct } from "@/lib/types";
 import { buildWhatsappMessageLink } from "@/lib/whatsapp";
 import ProductCard from "./ProductCard";
+import WhatsappLink from "./WhatsappLink";
 
 export type CatalogFilterValues = {
   q: string;
@@ -170,14 +171,12 @@ export default function CatalogFilters({
             tu talla.
           </p>
           {requestLink && (
-            <a
+            <WhatsappLink
               href={requestLink}
-              target="_blank"
-              rel="noopener noreferrer"
               className="rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700"
             >
               Avisarme por WhatsApp
-            </a>
+            </WhatsappLink>
           )}
         </div>
       )}

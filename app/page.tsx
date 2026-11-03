@@ -3,6 +3,7 @@ import CatalogFilters, { type CatalogFilterValues } from "@/components/CatalogFi
 import HowToBuy from "@/components/HowToBuy";
 import SizeGuide from "@/components/SizeGuide";
 import WhatsappFloatingButton from "@/components/WhatsappFloatingButton";
+import PageViewTracker from "@/components/PageViewTracker";
 import { buildWhatsappMessageLink } from "@/lib/whatsapp";
 import { PUBLIC_PRODUCT_COLUMNS, type PublicProduct, type Settings } from "@/lib/types";
 
@@ -69,6 +70,8 @@ export default async function Home({
       )}
 
       {contactLink && <WhatsappFloatingButton href={contactLink} />}
+
+      <PageViewTracker />
     </div>
   );
 }
