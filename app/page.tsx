@@ -4,6 +4,7 @@ import HowToBuy from "@/components/HowToBuy";
 import SizeGuide from "@/components/SizeGuide";
 import WhatsappFloatingButton from "@/components/WhatsappFloatingButton";
 import PageViewTracker from "@/components/PageViewTracker";
+import ShoppingAssistant from "@/components/ShoppingAssistant";
 import { buildWhatsappMessageLink } from "@/lib/whatsapp";
 import { PUBLIC_PRODUCT_COLUMNS, type PublicProduct, type Settings } from "@/lib/types";
 
@@ -70,6 +71,15 @@ export default async function Home({
       )}
 
       {contactLink && <WhatsappFloatingButton href={contactLink} />}
+
+      {/* Solo se muestra si el servidor tiene configurada la clave de Anthropic. */}
+      {process.env.ANTHROPIC_API_KEY && !error && (
+        <ShoppingAssistant
+          // Incluye vendidos para mostrar "VENDIDO" si la conversación guardada los menciona.
+          products={(products ?? []) as PublicProduct[]}
+          whatsappNumber={whatsappNumber}
+        />
+      )}
 
       <PageViewTracker />
     </div>
