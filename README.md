@@ -18,7 +18,7 @@ Catálogo web de [tiendaz.online](https://tiendaz.online): una tienda pequeña e
 
 - Alta, edición y baja de productos; cambio de estado (disponible / reservado / vendido) con un clic desde la lista o el formulario. Las fotos se reducen en el navegador antes de subirlas (máximo 1600 px, ~300 KB).
 - Configuración del número de WhatsApp de la tienda.
-- Estadísticas (`/admin/stats`): visitas, visitantes únicos, clics en WhatsApp, pares más vistos y de dónde llegan las visitas.
+- Estadísticas (`/admin/stats`): visitantes (navegadores distintos), páginas vistas, clics en WhatsApp, pares más vistos y de dónde llegan las visitas.
 
 ## Tecnologías
 
@@ -119,5 +119,5 @@ Se corren desde la raíz del proyecto con `npx tsx scripts/<nombre>.ts` y leen `
 ## Datos y permisos
 
 - **Columnas públicas.** El público solo puede leer las columnas de venta de `products`. El precio de compra, el proveedor, la fecha de ingreso y la ubicación (`buy_price`, `provider`, `intake_date`, `location`) son solo para el admin. Si se agrega una columna que deba ser pública, sumarla en **los dos lugares**: `PUBLIC_PRODUCT_COLUMNS` en [lib/types.ts](lib/types.ts) y el `grant select (...)` de [supabase/schema.sql](supabase/schema.sql) (ejecutando de nuevo ese `grant` en Supabase). Las páginas públicas nunca deben usar `select("*")`.
-- **Estadísticas.** La tabla `page_events` acepta registros de cualquier visitante, pero solo el admin puede leerlos (a través de la función `admin_stats`). Cada navegador se identifica con un id anónimo al azar; no se guardan datos personales. No se cuentan las visitas con la sesión de admin abierta.
+- **Estadísticas.** La tabla `page_events` acepta registros de cualquier visitante, pero solo el admin puede leerlos (a través de la función `admin_stats`). Cada navegador se identifica con un id anónimo al azar; no se guardan datos personales. No se cuentan las visitas con la sesión de admin abierta. El catálogo cuenta una sola página vista por sesión de la pestaña (volver desde una ficha no suma); cada apertura de una ficha sí cuenta.
 - **Asistente.** Las conversaciones se envían a Anthropic para generar las respuestas. El asistente recibe solo los pares disponibles y sus columnas públicas. Conviene tener un límite de gasto mensual configurado en la consola de Anthropic (**Limits**).

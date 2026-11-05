@@ -85,8 +85,9 @@ export default async function StatsPage() {
         </Link>
         <h1 className="mt-2 text-2xl font-bold text-zinc-900 dark:text-zinc-50">Estadísticas</h1>
         <p className="text-sm text-zinc-500">
-          Visitas al catálogo y a las fichas de producto. No cuenta tus visitas con sesión de
-          admin iniciada.
+          Visitantes son las personas (navegadores distintos); páginas vistas, cada vez que
+          abren el catálogo o una ficha. El catálogo cuenta una vez por visita. No cuenta tus
+          visitas con sesión de admin iniciada.
         </p>
       </div>
 
@@ -98,14 +99,14 @@ export default async function StatsPage() {
       ) : (
         <>
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <StatTile label="Visitas hoy" value={s("views_today")}>
-              <span className="text-zinc-500">{s("visitors_today")} visitantes</span>
+            <StatTile label="Visitantes hoy" value={s("visitors_today")}>
+              <span className="text-zinc-500">{s("views_today")} páginas vistas</span>
             </StatTile>
-            <StatTile label="Visitas (7 días)" value={s("views_7d")}>
-              <Delta current={s("views_7d")} previous={s("views_prev_7d")} />
-            </StatTile>
-            <StatTile label="Visitantes únicos (7 días)" value={s("visitors_7d")}>
+            <StatTile label="Visitantes (7 días)" value={s("visitors_7d")}>
               <Delta current={s("visitors_7d")} previous={s("visitors_prev_7d")} />
+            </StatTile>
+            <StatTile label="Páginas vistas (7 días)" value={s("views_7d")}>
+              <Delta current={s("views_7d")} previous={s("views_prev_7d")} />
             </StatTile>
             <StatTile label="Clics en WhatsApp (7 días)" value={s("whatsapp_7d")}>
               <Delta current={s("whatsapp_7d")} previous={s("whatsapp_prev_7d")} />
@@ -115,11 +116,11 @@ export default async function StatsPage() {
           <section className="flex flex-col gap-3 rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
             <div>
               <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
-                Visitas por día
+                Visitantes por día
               </h2>
               <p className="text-xs text-zinc-500">
-                Últimos {DAYS} días: {s("views_period")} visitas, {s("visitors_period")}{" "}
-                visitantes, {s("whatsapp_period")} clics en WhatsApp
+                Últimos {DAYS} días: {s("visitors_period")} visitantes, {s("views_period")}{" "}
+                páginas vistas, {s("whatsapp_period")} clics en WhatsApp
               </p>
             </div>
             <DailyVisitsChart data={stats.daily} />
@@ -137,7 +138,7 @@ export default async function StatsPage() {
                   <thead className="text-zinc-500">
                     <tr>
                       <th className="py-1 font-medium">Par</th>
-                      <th className="py-1 text-right font-medium">Visitas</th>
+                      <th className="py-1 text-right font-medium">Vistas</th>
                       <th className="py-1 text-right font-medium">Clics WhatsApp</th>
                     </tr>
                   </thead>
@@ -171,7 +172,7 @@ export default async function StatsPage() {
 
             <section className="flex flex-col gap-3 rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
               <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
-                De dónde llegan ({DAYS} días)
+                De dónde llegan (páginas vistas, {DAYS} días)
               </h2>
               {stats.sources.length === 0 ? (
                 <p className="text-sm text-zinc-500">Todavía no hay visitas.</p>

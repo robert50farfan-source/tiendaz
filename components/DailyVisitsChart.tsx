@@ -50,7 +50,7 @@ export default function DailyVisitsChart({ data }: { data: DailyStat[] }) {
     return () => observer.disconnect();
   }, []);
 
-  const yMax = niceMax(Math.max(0, ...data.map((d) => d.views)));
+  const yMax = niceMax(Math.max(0, ...data.map((d) => d.visitors)));
   const ticks = [0, yMax / 2, yMax];
   const plotW = Math.max(0, width - PAD.left - PAD.right);
   const plotH = HEIGHT - PAD.top - PAD.bottom;
@@ -66,7 +66,7 @@ export default function DailyVisitsChart({ data }: { data: DailyStat[] }) {
     <div className="flex flex-col gap-3">
       <div ref={containerRef} className="relative w-full" style={{ height: HEIGHT }}>
         {measured !== null && (
-          <svg width={width} height={HEIGHT} role="img" aria-label="Visitas por día" className="block">
+          <svg width={width} height={HEIGHT} role="img" aria-label="Visitantes por día" className="block">
             {ticks.map((t) => (
               <g key={t}>
                 <line
@@ -91,12 +91,12 @@ export default function DailyVisitsChart({ data }: { data: DailyStat[] }) {
 
             {data.map((d, i) => {
               const x = PAD.left + i * colW + 1;
-              const h = y(0) - y(d.views);
+              const h = y(0) - y(d.visitors);
               return (
                 <g key={d.day}>
-                  {d.views > 0 && (
+                  {d.visitors > 0 && (
                     <path
-                      d={barPath(x, y(d.views), barW, h)}
+                      d={barPath(x, y(d.visitors), barW, h)}
                       className={`fill-[#2a78d6] dark:fill-[#3987e5] ${
                         active === i ? "opacity-75" : ""
                       }`}
@@ -121,7 +121,7 @@ export default function DailyVisitsChart({ data }: { data: DailyStat[] }) {
                     height={plotH}
                     fill="transparent"
                     tabIndex={0}
-                    aria-label={`${shortDate(d.day)}: ${d.views} visitas`}
+                    aria-label={`${shortDate(d.day)}: ${d.visitors} visitantes`}
                     onPointerEnter={() => setActive(i)}
                     onPointerLeave={() => setActive(null)}
                     onFocus={() => setActive(i)}
@@ -148,7 +148,7 @@ export default function DailyVisitsChart({ data }: { data: DailyStat[] }) {
               {weekday(current.day)} {shortDate(current.day)}
             </div>
             <div className="text-zinc-600 dark:text-zinc-300">
-              {current.views} visitas · {current.visitors} visitantes
+              {current.visitors} visitantes · {current.views} páginas vistas
             </div>
             <div className="text-zinc-600 dark:text-zinc-300">
               {current.whatsapp} clics en WhatsApp
@@ -164,8 +164,8 @@ export default function DailyVisitsChart({ data }: { data: DailyStat[] }) {
             <thead className="text-zinc-500">
               <tr>
                 <th className="py-1 font-medium">Día</th>
-                <th className="py-1 text-right font-medium">Visitas</th>
                 <th className="py-1 text-right font-medium">Visitantes</th>
+                <th className="py-1 text-right font-medium">Páginas vistas</th>
                 <th className="py-1 text-right font-medium">Clics WhatsApp</th>
               </tr>
             </thead>
@@ -175,8 +175,8 @@ export default function DailyVisitsChart({ data }: { data: DailyStat[] }) {
                   <td className="py-1">
                     {weekday(d.day)} {shortDate(d.day)}
                   </td>
-                  <td className="py-1 text-right">{d.views}</td>
                   <td className="py-1 text-right">{d.visitors}</td>
+                  <td className="py-1 text-right">{d.views}</td>
                   <td className="py-1 text-right">{d.whatsapp}</td>
                 </tr>
               ))}
