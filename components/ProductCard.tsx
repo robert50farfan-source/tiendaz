@@ -55,6 +55,12 @@ export default function ProductCard({ product }: { product: PublicProduct }) {
         </span>
         {sold ? (
           <span className="mt-1 text-base font-bold text-red-600">VENDIDO</span>
+        ) : product.status === "reservado" ? (
+          // El precio sigue visible: un reservado puede liberarse.
+          <span className="mt-1 flex items-baseline gap-2">
+            <span className="text-base font-bold text-amber-700 dark:text-amber-400">RESERVADO</span>
+            <span className="text-xs text-zinc-500">Bs {product.sale_price}</span>
+          </span>
         ) : (
           <span className="mt-1 text-base font-bold text-zinc-900 dark:text-zinc-50">
             Bs {product.sale_price}

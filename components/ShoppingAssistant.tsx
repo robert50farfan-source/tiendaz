@@ -58,6 +58,8 @@ function ProductChip({ product }: { product: PublicProduct }) {
         </span>
         {product.status === "vendido" ? (
           <span className="font-bold text-red-600">VENDIDO</span>
+        ) : product.status === "reservado" ? (
+          <span className="font-bold text-amber-700 dark:text-amber-400">RESERVADO</span>
         ) : (
           <span className="font-bold text-zinc-900 dark:text-zinc-50">Bs {product.sale_price}</span>
         )}

@@ -38,7 +38,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description =
     product.status === "vendido"
       ? "Este par ya se vendió. Mira otros pares disponibles en el catálogo."
-      : `Estado ${product.condition?.toLowerCase() ?? "revisado"}. Pídelas por WhatsApp y te las llevamos para probártelas.`;
+      : product.status === "reservado"
+        ? "Este par está reservado. Escríbenos por WhatsApp y te avisamos si se libera."
+        : `Estado ${product.condition?.toLowerCase() ?? "revisado"}. Pídelas por WhatsApp y te las llevamos para probártelas.`;
   const image = productImageList(product, 1200)[0];
 
   return {
@@ -67,8 +69,9 @@ export default async function ProductPage({ params }: Props) {
   const images = productImageList(product, 1200);
   const siteUrl = await getSiteUrl();
   const productUrl = siteUrl ? `${siteUrl}/product/${encodeURIComponent(product.code)}` : null;
+  // Disponible: consulta normal. Reservado: pide aviso si se libera. Vendido: sin botón.
   const whatsappLink =
-    product.status === "disponible"
+    product.status !== "vendido"
       ? buildWhatsappLink(settings?.whatsapp_number, product, productUrl)
       : null;
 
@@ -95,6 +98,16 @@ export default async function ProductPage({ params }: Props) {
 
           {product.status === "vendido" && (
             <span className="text-xl font-bold tracking-wide text-red-600">VENDIDO</span>
+          )}
+          {product.status === "reservado" && (
+            <div className="flex flex-col gap-1">
+              <span className="text-xl font-bold tracking-wide text-amber-700 dark:text-amber-400">
+                RESERVADO
+              </span>
+              <span className="text-sm text-zinc-500">
+                Alguien ya coordinó para verlo. Si no se concreta, vuelve a estar disponible.
+              </span>
+            </div>
           )}
 
           <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
@@ -124,11 +137,11 @@ export default async function ProductPage({ params }: Props) {
               productCode={product.code}
               className="mt-2 flex w-fit items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700"
             >
-              Contactar por WhatsApp
+              {product.status === "reservado" ? "Avisarme si se libera" : "Contactar por WhatsApp"}
             </WhatsappLink>
           )}
 
-          {product.status === "vendido" && product.size_us && (
+          {product.status !== "disponible" && product.size_us && (
             <Link
               href={`/?talla=${encodeURIComponent(product.size_us)}`}
               className="mt-2 w-fit rounded-lg border border-zinc-300 px-4 py-2 text-sm font-semibold hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-900"

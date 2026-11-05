@@ -154,6 +154,11 @@ export default async function StatsPage() {
                           {p.status === "vendido" && (
                             <span className="ml-2 text-xs font-bold text-red-600">VENDIDO</span>
                           )}
+                          {p.status === "reservado" && (
+                            <span className="ml-2 text-xs font-bold text-amber-700 dark:text-amber-400">
+                              RESERVADO
+                            </span>
+                          )}
                         </td>
                         <td className="py-2 text-right">{p.views}</td>
                         <td className="py-2 text-right">{p.whatsapp}</td>

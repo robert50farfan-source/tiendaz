@@ -1,3 +1,13 @@
+// Orden de los estados: también es el orden en que se listan en el catálogo.
+export const PRODUCT_STATUSES = ["disponible", "reservado", "vendido"] as const;
+export type ProductStatus = (typeof PRODUCT_STATUSES)[number];
+
+export const STATUS_LABELS: Record<ProductStatus, string> = {
+  disponible: "Disponible",
+  reservado: "Reservado",
+  vendido: "Vendido",
+};
+
 export type Product = {
   id: string;
   code: string;
@@ -17,7 +27,7 @@ export type Product = {
   notes: string | null;
   image_url: string | null;
   image_urls: string[] | null;
-  status: "disponible" | "vendido";
+  status: ProductStatus;
   created_at: string;
 };
 

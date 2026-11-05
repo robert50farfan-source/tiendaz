@@ -75,7 +75,7 @@ export default async function Home({
       {/* Solo se muestra si el servidor tiene configurada la clave de Anthropic. */}
       {process.env.ANTHROPIC_API_KEY && !error && (
         <ShoppingAssistant
-          // Incluye vendidos para mostrar "VENDIDO" si la conversación guardada los menciona.
+          // Incluye reservados y vendidos para marcarlos si la conversación guardada los menciona.
           products={(products ?? []) as PublicProduct[]}
           whatsappNumber={whatsappNumber}
         />

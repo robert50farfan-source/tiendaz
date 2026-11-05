@@ -20,12 +20,19 @@ create table if not exists products (
   notes text,
   image_url text,
   image_urls text[] not null default '{}',
-  status text not null default 'disponible' check (status in ('disponible', 'vendido')),
+  status text not null default 'disponible' check (status in ('disponible', 'reservado', 'vendido')),
   created_at timestamptz not null default now()
 );
 
 -- Migración: agrega la galería de imágenes si la tabla ya existía sin esta columna.
 alter table products add column if not exists image_urls text[] not null default '{}';
+
+-- Migración: agrega el estado "reservado" si la tabla ya existía con solo disponible/vendido
+-- (igual que supabase/migration-reservado.sql).
+alter table products drop constraint if exists products_status_check;
+alter table products
+  add constraint products_status_check
+  check (status in ('disponible', 'reservado', 'vendido'));
 
 -- Privacidad: el público (anon) solo puede leer las columnas de venta.
 -- buy_price, provider, intake_date y location quedan solo para el admin autenticado.

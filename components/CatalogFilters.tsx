@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { PublicProduct } from "@/lib/types";
+import { PRODUCT_STATUSES, type PublicProduct } from "@/lib/types";
 import { buildWhatsappMessageLink } from "@/lib/whatsapp";
 import ProductCard from "./ProductCard";
 import WhatsappLink from "./WhatsappLink";
@@ -80,14 +80,17 @@ export default function CatalogFilters({
       if (filters.max && p.sale_price > Number(filters.max)) return false;
       return true;
     })
-    // Los vendidos se muestran (como referencia de lo que se vende) pero siempre al final.
+    // Primero disponibles, después reservados y al final vendidos (como referencia de lo
+    // que se vende); dentro de cada grupo, el orden elegido.
     .sort(
       (a, b) =>
-        Number(a.status === "vendido") - Number(b.status === "vendido") || sort.compare(a, b)
+        PRODUCT_STATUSES.indexOf(a.status) - PRODUCT_STATUSES.indexOf(b.status) ||
+        sort.compare(a, b)
     );
 
   const soldCount = filtered.filter((p) => p.status === "vendido").length;
-  const availableCount = filtered.length - soldCount;
+  const reservedCount = filtered.filter((p) => p.status === "reservado").length;
+  const availableCount = filtered.length - soldCount - reservedCount;
 
   const hasFilters = Boolean(filters.q || filters.marca || filters.talla || filters.max);
 
@@ -148,6 +151,8 @@ export default function CatalogFilters({
       <div className="flex items-center gap-3 text-sm text-zinc-500">
         <span>
           {availableCount} {availableCount === 1 ? "disponible" : "disponibles"}
+          {reservedCount > 0 &&
+            ` · ${reservedCount} ${reservedCount === 1 ? "reservado" : "reservados"}`}
           {soldCount > 0 && ` · ${soldCount} ${soldCount === 1 ? "vendido" : "vendidos"}`}
         </span>
         {hasFilters && (
@@ -164,8 +169,8 @@ export default function CatalogFilters({
       {availableCount === 0 && (
         <div className="flex flex-col items-start gap-3 rounded-xl border border-dashed border-zinc-300 p-6 dark:border-zinc-700">
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            {soldCount > 0
-              ? "Los pares que coinciden con tu búsqueda ya se vendieron."
+            {soldCount > 0 || reservedCount > 0
+              ? "Los pares que coinciden con tu búsqueda están reservados o ya se vendieron."
               : "No hay pares que coincidan con tu búsqueda."}{" "}
             Nos llegan pares nuevos seguido: escríbenos y te avisamos cuando llegue algo en
             tu talla.

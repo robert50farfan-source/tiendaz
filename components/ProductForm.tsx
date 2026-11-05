@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { resizeImage } from "@/lib/resize-image";
-import type { Product } from "@/lib/types";
+import type { Product, ProductStatus } from "@/lib/types";
+import StatusPicker from "./StatusPicker";
 
 type Props = {
   product?: Product;
@@ -28,7 +29,7 @@ const emptyForm = {
   location: "",
   notes: "",
   image_urls: [] as string[],
-  status: "disponible" as "disponible" | "vendido",
+  status: "disponible" as ProductStatus,
 };
 
 function buildForm(product?: Product) {
@@ -352,17 +353,10 @@ export default function ProductForm({ product }: Props) {
         {uploading && <span className="text-xs text-zinc-500">Optimizando y subiendo fotos...</span>}
       </div>
 
-      <label className="flex flex-col gap-1 text-sm">
+      <div className="flex flex-col gap-1 text-sm">
         Estado publicación
-        <select
-          value={form.status}
-          onChange={(e) => update("status", e.target.value as "disponible" | "vendido")}
-          className="rounded-lg border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
-        >
-          <option value="disponible">Disponible</option>
-          <option value="vendido">Vendido</option>
-        </select>
-      </label>
+        <StatusPicker size="md" value={form.status} onChange={(status) => update("status", status)} />
+      </div>
 
       {error && <p className="text-sm text-red-500">{error}</p>}
 

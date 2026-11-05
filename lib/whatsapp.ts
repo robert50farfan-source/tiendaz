@@ -17,10 +17,13 @@ export function buildWhatsappMessageLink(
 // vista previa (foto, modelo y precio, desde los meta Open Graph de la ficha).
 export function buildWhatsappLink(
   rawNumber: string | null | undefined,
-  product: Pick<Product, "code" | "brand" | "model">,
+  product: Pick<Product, "code" | "brand" | "model" | "status">,
   productUrl?: string | null
 ): string | null {
-  let message = `Hola, me interesa el par ${product.brand} ${product.model} (código ${product.code}). ¿Sigue disponible?`;
+  let message =
+    product.status === "reservado"
+      ? `Hola, vi que el par ${product.code} está reservado. ¿Me avisan si se libera?`
+      : `Hola, me interesa el par ${product.brand} ${product.model} (código ${product.code}). ¿Sigue disponible?`;
   if (productUrl) message += `\n${productUrl}`;
   return buildWhatsappMessageLink(rawNumber, message);
 }

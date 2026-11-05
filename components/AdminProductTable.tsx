@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import type { Product } from "@/lib/types";
+import type { Product, ProductStatus } from "@/lib/types";
+import StatusPicker from "./StatusPicker";
 
 export default function AdminProductTable({ products }: { products: Product[] }) {
   const supabase = createClient();
@@ -22,11 +23,14 @@ export default function AdminProductTable({ products }: { products: Product[] })
     );
   }, [products, search]);
 
-  async function toggleStatus(product: Product) {
+  async function changeStatus(product: Product, status: ProductStatus) {
     setBusyId(product.id);
-    const newStatus = product.status === "disponible" ? "vendido" : "disponible";
-    await supabase.from("products").update({ status: newStatus }).eq("id", product.id);
+    const { error } = await supabase.from("products").update({ status }).eq("id", product.id);
     setBusyId(null);
+    if (error) {
+      alert(`No se pudo cambiar el estado de ${product.code}: ${error.message}`);
+      return;
+    }
     router.refresh();
   }
 
@@ -79,15 +83,11 @@ export default function AdminProductTable({ products }: { products: Product[] })
               </td>
               <td className="px-3 py-2">Bs {p.sale_price}</td>
               <td className="px-3 py-2">
-                <span
-                  className={
-                    p.status === "disponible"
-                      ? "rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900 dark:text-green-300"
-                      : "rounded-full bg-zinc-200 px-2 py-0.5 text-xs text-zinc-700 dark:bg-zinc-700 dark:text-zinc-200"
-                  }
-                >
-                  {p.status}
-                </span>
+                <StatusPicker
+                  value={p.status}
+                  disabled={busyId === p.id}
+                  onChange={(status) => changeStatus(p, status)}
+                />
               </td>
               <td className="px-3 py-2">
                 <div className="flex gap-3">
@@ -97,13 +97,6 @@ export default function AdminProductTable({ products }: { products: Product[] })
                   >
                     Editar
                   </Link>
-                  <button
-                    disabled={busyId === p.id}
-                    onClick={() => toggleStatus(p)}
-                    className="text-xs font-medium text-amber-600 hover:underline disabled:opacity-50"
-                  >
-                    {p.status === "disponible" ? "Marcar vendido" : "Marcar disponible"}
-                  </button>
                   <button
                     disabled={busyId === p.id}
                     onClick={() => remove(p)}
