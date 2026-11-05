@@ -11,6 +11,7 @@ import HowToBuy from "@/components/HowToBuy";
 import SizeGuide from "@/components/SizeGuide";
 import PageViewTracker from "@/components/PageViewTracker";
 import WhatsappLink from "@/components/WhatsappLink";
+import ShareButtons from "@/components/ShareButtons";
 import { PUBLIC_PRODUCT_COLUMNS, type PublicProduct, type Settings } from "@/lib/types";
 
 export const revalidate = 0;
@@ -139,6 +140,17 @@ export default async function ProductPage({ params }: Props) {
             >
               {product.status === "reservado" ? "Avisarme si se libera" : "Contactar por WhatsApp"}
             </WhatsappLink>
+          )}
+
+          {/* Un par vendido no tiene sentido difundirlo. */}
+          {product.status !== "vendido" && productUrl && (
+            <ShareButtons
+              url={productUrl}
+              code={product.code}
+              title={`${product.brand} ${product.model} · Bs ${product.sale_price}`}
+              text={`Mira este par: ${product.brand} ${product.model}, talla US ${product.size_us ?? "-"} / BOL ${product.size_bol ?? "-"}, Bs ${product.sale_price}.`}
+              imageUrl={images[0] ?? null}
+            />
           )}
 
           {product.status !== "disponible" && product.size_us && (

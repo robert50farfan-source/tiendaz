@@ -9,6 +9,7 @@ Catálogo web de [tiendaz.online](https://tiendaz.online): una tienda pequeña e
 - Catálogo con buscador, filtros (marca, talla, precio máximo) y orden. Los filtros quedan en la URL, así que se pueden compartir (`/?talla=10`).
 - Ficha de cada par con galería de fotos, tallas US y BOL, estado y botón de WhatsApp con un mensaje ya escrito que incluye el link del par.
 - Cada par tiene uno de tres estados: **disponible**, **reservado** (alguien coordinó para verlo; "RESERVADO" en ámbar) o **vendido** ("VENDIDO" en rojo). El catálogo muestra primero los disponibles, después los reservados y al final los vendidos. En un par reservado, el botón de WhatsApp pide que avisen si se libera.
+- Botones para compartir en cada ficha (salvo vendidos): **Compartir** abre el menú del celular con el link del par (WhatsApp, estados, Instagram…) y **Compartir foto** manda la imagen del par, para estados e historias. En computadoras sin ese menú, ofrecen enviar por WhatsApp web o copiar el link.
 - Guía de tallas US ↔ BOL armada con las tallas cargadas en el inventario.
 - Vista previa al compartir links: la página principal muestra un collage (`public/og-image.jpg`) y cada ficha muestra la foto del par, con talla y precio.
 - **Asistente de compra con IA** (Claude Haiku 5.5): recomienda pares disponibles (nunca reservados ni vendidos) según talla, presupuesto y uso, y deriva a WhatsApp.
